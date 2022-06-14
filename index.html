@@ -61,14 +61,25 @@
             }
 
             async function getQueryResponse(data) {
+                const chunks = await getChunks(data);
+                if(chunks.length === 0) return '';
+                if (typeof(chunks[0]) === 'string'){
+                    return chunks.join('');
+                }
+                else {
+                    return new TextDecoder().decode(concat(chunks));
+                }
+            }
+            
+            async function getChunks(data) {
                 const chunks = [];
                 for await (const chunk of data) {
                     chunks.push(chunk);
                 }
                 //console.log(chunks);
-                return new TextDecoder().decode(concat(chunks));
+                return chunks;
             }
-
+            
             function concat(arrays) {
                 // sum of individual array lengths
                 let totalLength = arrays.reduce((acc, value) => acc + value.length, 0);
